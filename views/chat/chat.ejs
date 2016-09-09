@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= typeof title == 'undefined' ? 'ChatBotApp' : title %></title>
+    <!-- Viewport mobile tag for sensible mobile support -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!--STYLES-->
+    <link rel="stylesheet" href="/stylesheets/bootstrap.css">
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <link rel="stylesheet" href="/stylesheets/chat.css">
+    <!--STYLES END-->
+</head>
+<body>
+<% include ../partials/header %>
+
+
+<div class="chat" >
+    <div class="chat-title">
+        <h1>Chat Room</h1>
+        <h2> Welcome to Chat Bot Application!</h2>
+        <figure class="avatar">
+            <img src="https://jumpingmonkeyart.files.wordpress.com/2014/04/tst-avatar.png?w=304" /></figure>
+    </div>
+
+    <div class="messages" id="chat">
+        <div class="messages-content"></div>
+    </div>
+    <form id="messageForm">
+    <div class="message-box">
+        <textarea type="text" id="message" class="message-input" placeholder="Type message..."></textarea>
+        <button type="submit" class="message-submit">Send</button>
+        <input type="hidden" id="username"/>
+    </div>
+    </form>
+</div>
+<div class="bg"></div>
+
+<% include ../partials/footer %>
+
+<!--SCRIPTS-->
+<script src="/javascripts/jquery.js"></script>
+<script src="/javascripts/jquery.validate.js"></script>
+<script src="/javascripts/socket.io.js"></script>
+<script src="/javascripts/bootstrap.js"></script>
+<script src="/javascripts/enscroll-0.6.2.min.js"></script>
+
+<script>
+    $(function () {
+        var socket = io.connect();
+        var $messageForm = $('#messageForm');
+        var $message = $('#message');
+        var $chat = $('#chat');
+        var $messageArea = $('#messageArea');
+        var $userFormArea = $('#userFormArea');
+        var $userForm = $('#userForm');
+        var $users = $('#users');
+        var $username = $('#username');
+        $("#username").val("<%= user.name %>");
+        socket.emit('new user', $username.val());
+//        $("#username").val("test");
+
+        $messageForm.submit(function (e) {
+            e.preventDefault();
+            console.log('Submitted');
+            socket.emit('send message', $message.val());
+            $message.val('');
+            $username.val('');
+        });
+
+        $('textarea').bind("enterKey", function (e) {
+            $messageForm.submit();
+        });
+        $('textarea').keyup(function (e) {
+            if (e.keyCode == 13) {
+                $(this).trigger("enterKey");
+            }
+        });
+        socket.on('new message', function (data) {
+            $chat.append('<div class="message message-personal">' + data.user + '</strong>:' + data.msg + '</div>');
+
+        });
+        socket.on('typing', function(message){
+           $chat.append('<div class="message loading"></div>');
+        });
+        socket.on('chat message', function(msg){
+            $chat.append('<div class="message new"><figure class="avatar"><img src="http://images.techtimes.com/data/images/full/76967/star-wars-darth-vader.jpg?w=600" /></figure>' + msg.user + '</strong>:' + msg.msg + '</div>');
+            $('.message.loading').remove();
+        });
+        $userForm.submit(function (e) {
+            e.preventDefault();
+            console.log('Submitted');
+            socket.emit('new user', $username.val(), function (data) {
+                if (data) {
+                    $userFormArea.hide();
+                    $messageArea.show();
+                }
+            });
+            $username.val('');
+        });
+        socket.on('get users', function (data) {
+            var html = '';
+            for (i = 0; i < data.length; i++) {
+                html += '<li class="list-group-item">' + data[i] + '</li>';
+            }
+            $users.html(html);
+        });
+        $chat.enscroll({
+            showOnHover: true,
+            verticalTrackClass: 'track3',
+            verticalHandleClass: 'handle3'
+        });
+        $chat.bind("DOMSubtreeModified",function() {
+            $chat.animate({
+                scrollTop: $chat[0].scrollHeight
+            });
+        });
+        $('textarea').keypress(function(e){
+            var dNow = new Date();
+            var localdate= (dNow.getMonth()+1) + '/' + dNow.getDate() + '/' + dNow.getFullYear() + ' ' + dNow.getHours() + ':' + dNow.getMinutes();
+            socket.emit('keypress', {'keypress': 'keypress', letter: String.fromCharCode(e.charCode), timestamp: localdate});
+        });
+        $('textarea').keyup(function(e){
+            var dNow = new Date();
+            var localdate= (dNow.getMonth()+1) + '/' + dNow.getDate() + '/' + dNow.getFullYear() + ' ' + dNow.getHours() + ':' + dNow.getMinutes();
+            socket.emit('keyup', {'keyup': 'keyup', letter: e.keyCode, timestamp: localdate});
+        });
+        $('textarea').keydown(function(e){
+            var dNow = new Date();
+            var localdate= (dNow.getMonth()+1) + '/' + dNow.getDate() + '/' + dNow.getFullYear() + ' ' + dNow.getHours() + ':' + dNow.getMinutes();
+            socket.emit('keydown', {'keydown': 'keydown', letter: e.keyCode, timestamp: localdate});
+        });
+    });
+</script>
+<!--SCRIPTS END-->
+
+</body>
+</html>

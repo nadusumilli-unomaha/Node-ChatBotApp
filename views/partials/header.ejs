@@ -1,0 +1,33 @@
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Chat Bot App</a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="/admin">User Administration</a></li>
+                <li><a href="#">Placeholder</a></li>
+            </ul>
+            <% if (user == null) { %>
+            <form class="navbar-form navbar-right" action="../users/login" method="POST">
+                <div class="form-group">
+                    <input type="text" placeholder="Email" name="email" class="form-control">
+                </div>
+                <div class="form-group">
+                    <input type="password" placeholder="Password" name="password" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-success">Sign in</button>
+                <% } else { %>
+                <div class="navbar-right">
+                    <a class="btn btn-default navbar-btn navbar-right" href="/logout">Sign out</a>
+                </div>
+                <% } %>
+            </form>
+        </div>
+    </div>
+</div>

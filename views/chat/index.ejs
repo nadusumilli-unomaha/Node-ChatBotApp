@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= typeof title == 'undefined' ? 'ChatBotApp' : title %></title>
+    <!-- Viewport mobile tag for sensible mobile support -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!--STYLES-->
+    <link rel="stylesheet" href="/stylesheets/bootstrap.css">
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <!--STYLES END-->
+</head>
+<body>
+<% include ../partials/header %>
+
+<style>
+    body {
+        margin: 30px;
+    }
+
+    #messageArea {
+        display: none;
+    }
+</style>
+
+
+<div class="container">
+    <div id="userFormArea" class="container">
+        <div class="row-fluid">
+            <div class="span12">
+                <div class="login well well-small">
+                    <form id="userForm">
+                        <div class="control-group">
+                            <label>Enter Username</label>
+                            <div class="input-prepend">
+                                <span class="add-on"><i class="icon-user"></i></span>
+                                <input class="form-control" id="username"/>
+                            </div>
+                            <br/>
+                            <br/>
+                        </div>
+                        <div class="control-group">
+                            <input class="btn btn-primary btn-large btn-block" type="submit" value="Login to Chat Room">
+                        </div>
+                    </form>
+                </div><!--/.login-->
+            </div><!--/.span12-->
+        </div><!--/.row-fluid-->
+    </div><!--/.container-->
+    <div id="messageArea" class="row">
+        <div class="col-md-4">
+            <div class="well">
+                <h3>Online Users</h3>
+                <ul class="list-group" id="users"></ul>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="chat" id="chat">
+            </div>
+            <form id="messageForm">
+                <div class="form-group">
+                    <label>Enter Messages</label>
+                    <textarea class="form-control" id="message"></textarea>
+                    <br/>
+                    <input type="submit" class="btn btn-primary" value="Send Message"/>
+                </div>
+            </form>
+        </div>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <img alt="Responsive image" src="http://lorempixel.com/140/140/"/>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<% include ../partials/footer %>
+
+<!--SCRIPTS-->
+<script src="/javascripts/jquery.js"></script>
+<script src="/javascripts/jquery.validate.js"></script>
+<script src="/javascripts/socket.io.js"></script>
+<script src="/javascripts/bootstrap.js"></script>
+
+<script>
+    $(function () {
+        var socket = io.connect();
+        var $messageForm = $('#messageForm');
+        var $message = $('#message');
+        var $chat = $('#chat');
+        var $messageArea = $('#messageArea');
+        var $userFormArea = $('#userFormArea');
+        var $userForm = $('#userForm');
+        var $users = $('#users');
+        var $username = $('#username');
+
+        $("#username").val("<%= user.name %>");
+
+        $messageForm.submit(function (e) {
+            e.preventDefault();
+            console.log('Submitted');
+            socket.emit('send message', $message.val());
+            $message.val('');
+        });
+
+        $('textarea').bind("enterKey", function (e) {
+            $messageForm.submit();
+        });
+        $('textarea').keyup(function (e) {
+            if (e.keyCode == 13) {
+                $(this).trigger("enterKey");
+            }
+        });
+        socket.on('new message', function (data) {
+            $chat.append('<div class="well"><strong>' + data.user + '</strong>:' + data.msg + '</div>');
+        });
+        socket.on('chat message', function(msg){
+            $chat.append('<div class="well"><strong>' + msg.user + '</strong>:' + msg.msg + '</div>');
+
+        });
+        $userForm.submit(function (e) {
+            e.preventDefault();
+            console.log('Submitted');
+            socket.emit('new user', $username.val(), function (data) {
+                if (data) {
+                    $userFormArea.hide();
+                    $messageArea.show();
+                }
+            });
+            $username.val('');
+        });
+        socket.on('get users', function (data) {
+            var html = '';
+            for (i = 0; i < data.length; i++) {
+                html += '<li class="list-group-item">' + data[i] + '</li>';
+            }
+            $users.html(html);
+        });
+    });
+</script>
+<!--SCRIPTS END-->
+
+</body>
+</html>

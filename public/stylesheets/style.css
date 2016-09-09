@@ -1,0 +1,141 @@
+body {
+    padding-top: 60px;
+    padding-bottom: 40px;
+}
+
+.jumbotron {
+    text-align: center;
+}
+
+.jumbotron h2 {
+    font-size: 1.5em;
+    letter-spacing: -1px;
+    margin-bottom: 30px;
+    text-align: center;
+    font-weight: normal;
+    color: gray;
+}
+
+.container .footer {
+    width: 25%;
+}
+
+.form-signin {
+    max-width: 30%;
+    padding: 19px 29px 29px;
+    margin: 0 auto 20px;
+    margin-top: 20px;
+    background-color: #ececec;
+    border: 1px solid #9EC03B;
+    -webkit-border-radius: 15px;
+    -moz-border-radius: 15px;
+    border-radius: 15px;
+}
+
+.form-signin h2 {
+    text-align: center;
+    margin-top: 0px;
+}
+
+.form-signin input[type="text"],
+.form-signin input[type="password"] {
+    font-size: 16px;
+    height: auto;
+    margin-bottom: 15px;
+    padding: 7px 9px;
+}
+
+.alert {
+    position: absolute;
+}
+
+h1, h2, h3, h4, h5, h6, a {
+    margin: 0;
+    padding: 0;
+}
+
+.login {
+    margin: 0 auto;
+    max-width: 500px;
+}
+
+.login-header {
+    color: #fff;
+    text-align: center;
+    font-size: 300%;
+}
+
+.login-header h1 {
+    text-shadow: 0px 5px 15px #000;
+}
+
+.login-form {
+    border: 2px solid #999;
+    background: #2c3e50;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px #000;
+}
+
+.login-form h3 {
+    text-align: left;
+    margin-left: 40px;
+    color: #fff;
+}
+
+.login-form {
+    box-sizing: border-box;
+    padding-top: 15px;
+    margin: 50px auto;
+    text-align: center;
+    overflow: hidden;
+}
+
+.login input[type="text"],
+.login input[type="password"] {
+    width: 100%;
+    max-width: 400px;
+    height: 30px;
+    font-family: 'Ubuntu', sans-serif;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 2px solid #f2f2f2;
+    outline: none;
+    padding-left: 10px;
+}
+
+.login-form input[type="submit"] {
+    height: 30px;
+    width: 100px;
+    background: #fff;
+    border: 1px solid #f2f2f2;
+    border-radius: 20px;
+    color: slategrey;
+    text-transform: uppercase;
+    font-family: 'Ubuntu', sans-serif;
+    cursor: pointer;
+}
+
+/*Media Querie*/
+@media only screen and (min-width: 150px) and (max-width: 530px) {
+    .login-form h3 {
+        text-align: center;
+        margin: 0;
+    }
+
+    .login-button {
+        margin-bottom: 10px;
+    }
+}
+
+#userFormArea .center {
+    text-align: center;
+}
+
+#userFormArea .login {
+    max-width: 300px;
+    margin: 35px auto;
+}
+
+#userFormArea .userForm {
+    padding: 0px 25px;
+}
