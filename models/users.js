@@ -1,4 +1,4 @@
-var mongoose = require('mongoose');
+var mongoose = require('mongoose')
 var bcrypt = require('bcryptjs');
 
 //User schema
@@ -12,7 +12,16 @@ var UserSchema = mongoose.Schema({
     },
     password: {
         type: String
+    },
+    isAdmin:{
+        type: Boolean,
+        default: false
+    },
+    url: {
+        type: String,
+        default: 'chat'
     }
+
 });
 
 var User = module.exports = mongoose.model('User', UserSchema);

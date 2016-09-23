@@ -29,6 +29,8 @@
         </div>
     </div>
 </div>
+<%if(!p.login){%>
+<%}else{%><meta http-equiv="refresh" content="0; url=http://localhost:3000/login" /><%}%>
 <div class="container" id="userForm">
     <div class="jumbotron">
         <div class="login">
@@ -47,16 +49,19 @@
     </div>
 </div>
 <div class= "chatForm" id="chatForm">
+    <%if(p.interviewer_image){%>
     <figure class="image">
-        <img src="/images/Ben.jpg"  class="img-thumbnail" alt="Responsive image">
-        <kbd>You are now chatting with Ben</kbd>
+        <img src="<%= p.interviewer_image%>"  class="img-thumbnail" alt="Responsive image">
+        <kbd>You are now chatting with <%=p.botname%></kbd>
     </figure>
-    <div class="chat" style="margin-left: 350px;" >
+    <%}else{%><%include ../partials/header %><%}%>
+    <div class="chat" <%if(p.interviewer_image){%> style="margin-left: 350px;" <%}%>>
         <div class="chat-title">
             <h1>Chat Room</h1>
             <h2> Welcome to Chat Application!</h2>
             <figure class="avatar">
-                <img src="http://megaicons.net/static/img/icons_sizes/311/1406/256/mario-icon.png" /></figure>
+                <img src="<%= p.chat_image %>" />
+            </figure>
         </div>
 
         <div class="messages" id="chat">
@@ -67,11 +72,15 @@
                 <textarea type="text" id="message" class="message-input" placeholder="Type message..."></textarea>
                 <button type="submit" class="message-submit">Send</button>
                 <input type="hidden" id="username"/>
+	            <input type="hidden" id="botname" value="<%=p.botname%>" />
+	            <input type="hidden" id="interviewer_name" value="<%= p.interviewer_name %>" />
             </div>
         </form>
     </div>
 </div>
 <div class="bg"></div>
+
+<% if(p.interviewer_image == ""){%><%include ../partials/footer%><%} %>
 
 <!--SCRIPTS-->
 <script src="/javascripts/jquery.js"></script>
@@ -88,12 +97,14 @@
         var $chatForm = $('#chatForm');
         var $userForm = $('#userForm');
         var $username = $('#username');
+        var $botname = $('#botname');
+        var $interviewer_name = $('#interviewer_name');
 //        $("#username").val("test");
 
         $messageForm.submit(function (e) {
             e.preventDefault();
             console.log('Submitted');
-            socket.emit('send message2', $message.val());
+            socket.emit('send message2', {msg:$message.val(), botname: $botname.val(), interviewer_name: $interviewer_name.val()});
             $message.val('');
             $username.val('');
         });
@@ -107,19 +118,19 @@
             }
         });
         socket.on('new message2', function (data) {
+            console.log("data message:::::"+data.msg);
             $chat.append('<div class="message message-personal">' + 'You' + '</strong>:' + data.msg + '</div>');
-
         });
         socket.on('typing', function(message){
             $chat.append('<div class="message loading"></div>');
         });
         socket.on('chat message2', function(msg){
             if (msg.msg == 'KTHXBYE') {
-                $chat.append('<div class="message new"><figure class="avatar"><img src="http://orig07.deviantart.net/1292/f/2008/215/e/a/vault_boy_dock_icon_by_oloff3.png" /></figure>' + msg.user + ' has left the chat' + '</div>');
+                $chat.append('<div class="message new"><figure class="avatar"><img src="<%= p.type_image %>" /></figure>' + msg.user + ' has left the chat' + '</div>');
                 $('.message.loading').remove();
                 $messageForm.css('visibility','hidden');
             } else {
-                $chat.append('<div class="message new"><figure class="avatar"><img src="http://images1.fanpop.com/images/image_uploads/Mario-Kart-Wii-Items-mario-kart-1116308_500_500.jpg" /></figure>' + msg.user + '</strong>:' + msg.msg + '</div>');
+                $chat.append('<div class="message new"><figure class="avatar"><img src="<%= p.type_image %>" /></figure>' + msg.user + '</strong>:' + msg.msg + '</div>');
             }
             $('.message.loading').remove();
         });

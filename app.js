@@ -213,9 +213,12 @@ io.sockets.on('connection', function (socket) {
     });
 
     socket.on('send message2', function (data) {
+        console.log(data.msg+"\nbotanme:"+data.botname +"\nInterviewer_name:"+data.interviewer_name);
         console.log(data);
-        io.sockets.emit('new message2', {msg: data, user: socket.username});
+        io.sockets.emit('new message2', {msg: data.msg, user: socket.username});
 
+        var botname = data.botname;
+        var interviewer_name = data.interviewer_name;
         var client = new net.Socket();
 
         client.connect(Port, Host, function () {
@@ -223,7 +226,7 @@ io.sockets.on('connection', function (socket) {
             logger.info('connected to ' + Port + ' '+ Host);
             console.log(socket.username + ': ' + data);
             logger.info('Sent to bot: Username is ' + socket.username + ' ' + 'and message is ' + data);
-            client.write(socket.username + '\0' + 'Matlock' + '\0' + data + '\0');
+            client.write(socket.username + '\0' + botname + '\0' + data + '\0');
         });
 
         // Add a 'data' event handler for the client socket
@@ -233,7 +236,7 @@ io.sockets.on('connection', function (socket) {
             logger.info('The bot replied : ' + data);
             io.sockets.emit('typing', true);
             setTimeout(function(){
-                io.sockets.emit('chat message2', {user: 'Ben', msg: '' + data});
+                io.sockets.emit('chat message2', {user: interviewer_name, msg: '' + data});
             }, 1000 + (Math.random() * 50) * 100);
             // Close the client socket completely
             client.destroy();
